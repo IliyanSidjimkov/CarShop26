@@ -1,0 +1,138 @@
+﻿@model CarShop26.ViewModels.AddCarsFormModel
+
+@{
+    Layout = "_Layout";
+    var createdValue = Model?.CreatedOn != default(DateTime)
+        ? Model.CreatedOn.ToString("yyyy-MM-ddTHH:mm")
+        : DateTime.Now.ToString("yyyy-MM-ddTHH:mm");
+}
+
+<h2 class="mb-4">Add Car</h2>
+
+<div class="card shadow-sm add-car-card">
+    <div class="card-body">
+        <form asp-action="AddCars" asp-controller="Car" method="post" class="row g-3">
+            @Html.AntiForgeryToken()
+
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <!-- Basic Information -->
+            <div class="col-12">
+                <h5 class="section-title">Basic Information</h5>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="Brand" class="form-label">Brand</label>
+                <input asp-for="Brand" class="form-control" />
+                <span asp-validation-for="Brand" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="Model" class="form-label">Model</label>
+                <input asp-for="Model" class="form-control" />
+                <span asp-validation-for="Model" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-4">
+                <label asp-for="Year" class="form-label">Year</label>
+                <input asp-for="Year" class="form-control" type="number" />
+                <span asp-validation-for="Year" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-4">
+                <label asp-for="Price" class="form-label">Price (€)</label>
+                <input asp-for="Price" class="form-control" type="number" step="0.01" />
+                <span asp-validation-for="Price" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-4">
+                <label asp-for="Mileage" class="form-label">Mileage (km)</label>
+                <input asp-for="Mileage" class="form-control" type="number" />
+                <span asp-validation-for="Mileage" class="text-danger"></span>
+            </div>
+
+            <!-- Specifications -->
+            <div class="col-12 mt-3">
+                <h5 class="section-title">Specifications</h5>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="FuelType" class="form-label">Fuel Type</label>
+                <select asp-for="FuelType" class="form-select">
+                    <option value="">-- Select fuel type --</option>
+                    @foreach (CarShop26.Models.FuelType ft in Enum.GetValues(typeof(CarShop26.Models.FuelType)))
+                    {
+                        <option value="@((int)ft)">@ft</option>
+                    }
+                </select>
+                <span asp-validation-for="FuelType" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="GearboxType" class="form-label">Gearbox</label>
+                <select asp-for="GearboxType" class="form-select">
+                    <option value="">-- Select gearbox --</option>
+                    @foreach (CarShop26.Models.GearboxType gb in Enum.GetValues(typeof(CarShop26.Models.GearboxType)))
+                    {
+                        <option value="@((int)gb)">@gb</option>
+                    }
+                </select>
+                <span asp-validation-for="GearboxType" class="text-danger"></span>
+            </div>
+
+            <!-- Media & Location -->
+            <div class="col-12 mt-3">
+                <h5 class="section-title">Media & Location</h5>
+            </div>
+
+            <div class="col-12">
+                <label asp-for="ImageUrl" class="form-label">Image URL</label>
+                <input asp-for="ImageUrl" class="form-control" id="imageUrlInput" placeholder="https://..." />
+                <span asp-validation-for="ImageUrl" class="text-danger"></span>
+
+                <img id="imagePreview"
+                     src="@Url.Content("~/images/placeholder-car.png")"
+                     class="img-fluid mt-2 preview-img"
+                     style="max-height: 220px; display: none;" />
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="CityId" class="form-label">City</label>
+                <select asp-for="CityId" class="form-select">
+                    <option value="">-- Select city --</option>
+                    @foreach (var city in Model.Cities)
+                    {
+                        <option value="@city.Id">@city.CityName</option>
+                    }
+                </select>
+                <span asp-validation-for="CityId" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="CategoryId" class="form-label">Category</label>
+                <select asp-for="CategoryId" class="form-select">
+                    <option value="">-- Select category --</option>
+                    @foreach (var cat in Model.Categories)
+                    {
+                        <option value="@cat.Id">@cat.CategoryName</option>
+                    }
+                </select>
+                <span asp-validation-for="CategoryId" class="text-danger"></span>
+            </div>
+
+            <div class="col-md-6">
+                <label asp-for="CreatedOn" class="form-label">Created On</label>
+                <input asp-for="CreatedOn" type="datetime-local" class="form-control" value="@createdValue" />
+                <span asp-validation-for="CreatedOn" class="text-danger"></span>
+            </div>
+
+            <!-- Actions -->
+            <div class="col-12 mt-3">
+                <button type="submit" class="btn btn-primary">Add Car</button>
+                <a asp-action="AllCars" asp-controller="Car" class="btn btn-secondary ms-2">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<partial name="_ValidationScriptsPartial" />

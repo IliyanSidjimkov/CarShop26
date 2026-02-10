@@ -39,6 +39,7 @@ namespace CarShop26
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllerRoute(
