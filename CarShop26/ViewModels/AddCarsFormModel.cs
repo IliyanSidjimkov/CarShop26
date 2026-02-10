@@ -47,7 +47,6 @@ namespace CarShop26.ViewModels
         [Required]
         public int CategoryId { get; set; }
 
-
         public IEnumerable<City> Cities { get; set; } = new List<City>();
 
         public IEnumerable<Category> Categories { get; set; } = new List<Category>();
