@@ -1,5 +1,5 @@
 using System.Diagnostics;
-using CarShop26.Models;
+using CarShop26.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CarShop26.Controllers
