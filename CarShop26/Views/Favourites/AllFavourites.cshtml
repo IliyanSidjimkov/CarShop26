@@ -1,47 +1,16 @@
 ﻿@model IEnumerable<AllCarsViewModel>
 
-<h2>My Favourites</h2>
+@{
+    ViewData["Title"] = "My Favourites";
+}
 
-@if (!Model.Any())
+<h2 class="mb-4">My Favourites</h2>
+
+@if (Model == null || !Model.Any())
 {
     <div class="alert alert-info">No favourites yet.</div>
 }
 else
 {
-    <div class="row">
-        @foreach (var car in Model)
-        {
-            <div class="col-md-4 mb-4">
-                <div class="card h-100">
-                    <img src="@(string.IsNullOrWhiteSpace(car.ImageUrl)
-                                                                                   ? Url.Content("~/images/placeholder-car.png")
-                                                                                   : car.ImageUrl)"
-                         class="card-img-top" />
-
-                    <div class="card-body">
-                        <h5>@car.Brand @car.Model</h5>
-                        <p>@car.Price.ToString("N2") €</p>
-
-                        <a asp-controller="Car"
-                           asp-action="Details"
-                           asp-route-id="@car.Id"
-                           asp-route-returnUrl="@Url.Action("AllFavourites", "Favourites")"
-                           class="btn btn-outline-primary">
-                            View Offer
-                        </a>
-
-                        <form method="post"
-                              asp-controller="Favourites"
-                              asp-action="RemoveFromFavourites"
-                              asp-route-carId="@car.Id">
-                            @Html.AntiForgeryToken()
-                            <button type="submit" class="btn btn-outline-danger mt-2">
-                                Remove
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        }
-    </div>
+    @await Html.PartialAsync("_AllAndFavouritesPartial", (Model, "Favourites"))
 }

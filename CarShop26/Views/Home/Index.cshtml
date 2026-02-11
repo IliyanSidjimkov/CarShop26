@@ -1,8 +1,62 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@using Microsoft.AspNetCore.Identity
+@{
+    ViewData["Title"] = "Home";
+    bool isAuthenticated = User?.Identity?.IsAuthenticated == true;
+    string userName = User?.Identity?.Name ?? "Guest";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow-lg border-0 rounded-4 p-5 text-center">
+
+                <h1 class="display-5 fw-bold mb-3">
+                    Welcome to CarShop26 🚗
+                </h1>
+
+                <p class="lead text-muted mb-4">
+                    Your marketplace for buying and selling cars easily, safely and fast.
+                </p>
+
+                @if (isAuthenticated)
+                {
+                    <h4 class="mb-3">Hello, @userName 👋</h4>
+
+                    <p class="mb-4">
+                        We’re glad to have you here!
+                        Explore our collection of cars, find your next vehicle, or publish your own listing.
+                    </p>
+
+                    <a asp-controller="Car" asp-action="AllCars" class="btn btn-primary btn-lg px-5">
+                        🚘 See our car collection
+                    </a>
+                }
+                else
+                {
+                    <h4 class="mb-3">Hello and welcome 👋</h4>
+
+                    <p class="mb-4">
+                        To explore our car collection and use all features of the platform,
+                        you need to be a registered user.
+                    </p>
+
+                    <div class="d-flex justify-content-center gap-3">
+                        <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-outline-primary btn-lg px-4">
+                            🔐 Login
+                        </a>
+
+                        <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-primary btn-lg px-4">
+                            📝 Register
+                        </a>
+                    </div>
+
+                    <p class="text-muted mt-4">
+                        If you want to browse our website and see the available cars,
+                        please create an account or log in first.
+                    </p>
+                }
+
+            </div>
+        </div>
+    </div>
 </div>

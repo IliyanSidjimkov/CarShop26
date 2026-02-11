@@ -48,7 +48,7 @@ namespace CarShop26.Controllers
 
         [HttpGet]
         [Authorize]
-        public IActionResult AddCars()
+        public IActionResult AddCars(string returnUrl = null)
         {
 
             CarsFormModel addCarsFormModel = new CarsFormModel()
@@ -56,19 +56,21 @@ namespace CarShop26.Controllers
                 Cities = dbContext.Cities.OrderBy(city => city.CityName).ToList(),
                 Categories = dbContext.Categories.OrderBy(category => category.CategoryName).ToList()
             };
-
+            ViewBag.ReturnUrl = returnUrl;
 
             return View(addCarsFormModel);
         }
 
         [HttpPost]
         [Authorize]
-        public IActionResult AddCars(CarsFormModel addCarsFormModel)
+        public IActionResult AddCars(CarsFormModel addCarsFormModel, string returnUrl = null)
         {
+            
             if (!ModelState.IsValid)
             {
                 addCarsFormModel.Cities = dbContext.Cities.OrderBy(city => city.CityName).ToList();
                 addCarsFormModel.Categories = dbContext.Categories.OrderBy(category => category.CategoryName).ToList();
+                ViewBag.ReturnUrl = returnUrl;
                 return View(addCarsFormModel);
 
             }
@@ -113,7 +115,7 @@ namespace CarShop26.Controllers
                 };
                 dbContext.Cars.Add(newCar);
                 dbContext.SaveChanges();
-                return RedirectToAction(nameof(AllCars));
+                return Redirect(returnUrl ?? Url.Action(nameof(AllCars)));
             }
             catch (Exception e)
             {

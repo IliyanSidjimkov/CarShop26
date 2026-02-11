@@ -1,25 +1,26 @@
 html {
-  font-size: 14px;
+    font-size: 14px;
 }
 
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 16px;
+    }
 }
 
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
 }
+
 .card {
     border: none;
     border-radius: 14px;
@@ -34,6 +35,45 @@ body {
     }
 
 
+.car-card {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    border-radius: 12px;
+    overflow: hidden;
+}
 
+    .car-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+    }
 
+.car-card-img {
+    height: 200px;
+    width: 100%;
+    object-fit: cover;
+    background-color: #f1f1f1;
+}
 
+.car-card .card-title {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.price {
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: #0d6efd;
+}
+
+.owner {
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type=number] {
+    -moz-appearance: textfield;
+}

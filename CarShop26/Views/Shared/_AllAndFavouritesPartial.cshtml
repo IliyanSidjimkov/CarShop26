@@ -1,0 +1,97 @@
+﻿@using System.Security.Claims
+@model (IEnumerable<AllCarsViewModel> Cars, string Mode)
+
+@{
+    var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    var isAuthenticated = User.Identity?.IsAuthenticated == true;
+}
+
+<div class="row">
+    @foreach (var car in Model.Cars)
+    {
+        <div class="col-xl-3 col-lg-4 col-md-6 mb-4">
+            <div class="card h-100 shadow-sm car-card">
+
+                <img src="@(string.IsNullOrWhiteSpace(car.ImageUrl)
+                                                     ? Url.Content("~/images/placeholder-car.png")
+                                                     : car.ImageUrl)"
+                     onerror="this.onerror=null; this.src='@Url.Content("~/images/placeholder-car.png")';"
+                     class="card-img-top car-card-img"
+                     alt="@(car.Brand) @(car.Model)" />
+
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">@car.Brand @car.Model</h5>
+
+                    <p class="price mb-1">
+                        @car.Price.ToString("N2") €
+                    </p>
+
+                    <p class="owner mb-3">
+                        Owner: @car.OwnerName
+                    </p>
+
+                    <div class="mt-auto d-flex gap-2 flex-wrap">
+
+                        <a asp-controller="Car"
+                           asp-action="Details"
+                           asp-route-id="@car.Id"
+                           class="btn btn-outline-primary btn-sm">
+                            View Offer
+                        </a>
+
+                        @if (Model.Mode == "AllCars")
+                        {
+                            if (isAuthenticated && car.OwnerId == currentUserId)
+                            {
+                                <a class="btn btn-warning btn-sm"
+                                   href="@Url.Action("Edit", "Car", new { id = car.Id })">
+                                    Edit
+                                </a>
+
+                                <form method="post"
+                                      action="@Url.Action("Delete", "Car", new { id = car.Id })">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        Delete
+                                    </button>
+                                </form>
+                            }
+                            else if (isAuthenticated)
+                            {
+                                if (car.isFavourite)
+                                {
+                                    <span class="btn btn-outline-secondary btn-sm disabled">
+                                        In favourites
+                                    </span>
+                                }
+                                else
+                                {
+                                    <form method="post"
+                                          action="@Url.Action("AddToFavourites", "Favourites", new { carId = car.Id })">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-outline-danger btn-sm">
+                                            Add to favourites
+                                        </button>
+                                    </form>
+                                }
+                            }
+                        }
+                        else if (Model.Mode == "Favourites")
+                        {
+                            <form method="post"
+                                  asp-controller="Favourites"
+                                  asp-action="RemoveFromFavourites"
+                                  asp-route-carId="@car.Id">
+                                @Html.AntiForgeryToken()
+                                <button type="submit" class="btn btn-outline-danger btn-sm">
+                                    Remove
+                                </button>
+                            </form>
+                        }
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
