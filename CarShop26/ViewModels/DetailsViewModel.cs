@@ -21,6 +21,7 @@
         public string GearboxType { get; set; } = null!;
 
         public string City { get; set; } = null!;
+        public DateTime CreatedOn { get; set; }
 
         public string Category { get; set; } = null!;
 

@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 namespace CarShop26.ViewModels
 {
     using static Common.EntityValidation;
-    public class AddCarsFormModel
+    public class CarsFormModel
     {
         [Required]
         [MaxLength(CarBrandMaxLength)]

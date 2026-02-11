@@ -20,6 +20,8 @@ namespace CarShop26.Controllers
         [Authorize]
         public IActionResult AllCars()
         {
+            string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             IEnumerable<AllCarsViewModel> allCars = dbContext
                 .Cars
                 .AsNoTracking()
@@ -33,7 +35,10 @@ namespace CarShop26.Controllers
                     ImageUrl = c.ImageUrl,
                     Price = c.Price,
                     OwnerName = c.User.UserName!,
-                    OwnerId = c.UserId
+                    OwnerId = c.UserId,
+                    isFavourite = userId != null &&
+                    dbContext.Favourites.Any(f => f.UserId == userId && f.CarId == c.Id)
+
                 })
                 .ToList();
 
@@ -46,7 +51,7 @@ namespace CarShop26.Controllers
         public IActionResult AddCars()
         {
 
-            AddCarsFormModel addCarsFormModel = new AddCarsFormModel()
+            CarsFormModel addCarsFormModel = new CarsFormModel()
             {
                 Cities = dbContext.Cities.OrderBy(city => city.CityName).ToList(),
                 Categories = dbContext.Categories.OrderBy(category => category.CategoryName).ToList()
@@ -58,7 +63,7 @@ namespace CarShop26.Controllers
 
         [HttpPost]
         [Authorize]
-        public IActionResult AddCars(AddCarsFormModel addCarsFormModel)
+        public IActionResult AddCars(CarsFormModel addCarsFormModel)
         {
             if (!ModelState.IsValid)
             {
@@ -119,7 +124,7 @@ namespace CarShop26.Controllers
         }
         [HttpGet]
         [Authorize]
-        public IActionResult Details(int id)
+        public IActionResult Details(int id, string? returnUrl)
         {
             Car? carDetails = dbContext
                 .Cars
@@ -147,8 +152,10 @@ namespace CarShop26.Controllers
                 City = carDetails.City.CityName,
                 Category = carDetails.Category.CategoryName,
                 OwnerName = carDetails.User.UserName!,
-                OwnerId = carDetails.UserId
+                OwnerId = carDetails.UserId,
+                CreatedOn = carDetails.CreatedOn
             };
+            ViewBag.ReturnUrl = returnUrl;
 
 
             return View(detailsViewModel);
@@ -173,7 +180,7 @@ namespace CarShop26.Controllers
                 return Unauthorized();
             }
 
-            AddCarsFormModel editCarsFormModel = new AddCarsFormModel()
+            CarsFormModel editCarsFormModel = new CarsFormModel()
             {
 
                 Brand = carToEdit.Brand,
@@ -194,7 +201,7 @@ namespace CarShop26.Controllers
 
         [HttpPost]
         [Authorize]
-        public IActionResult Edit(int id, AddCarsFormModel editCarsFormModel)
+        public IActionResult Edit(int id, CarsFormModel editCarsFormModel)
         {
 
             editCarsFormModel.Cities = dbContext.Cities.OrderBy(city => city.CityName).ToList();
@@ -215,7 +222,7 @@ namespace CarShop26.Controllers
             }
             if (!ModelState.IsValid)
             {
-                return View (editCarsFormModel);
+                return View(editCarsFormModel);
             }
             if (!ModelState.IsValid)
             {
@@ -305,4 +312,4 @@ namespace CarShop26.Controllers
 }
 
 
-    
+

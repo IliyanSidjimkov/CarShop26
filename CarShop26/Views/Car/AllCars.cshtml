@@ -22,8 +22,8 @@ else
             <div class="col-md-4 mb-4">
                 <div class="card h-100 shadow-sm">
                     <img src="@(string.IsNullOrWhiteSpace(car.ImageUrl)
-                                                     ? Url.Content("~/images/placeholder-car.png")
-                                                     : car.ImageUrl)"
+                                                                              ? Url.Content("~/images/placeholder-car.png")
+                                                                              : car.ImageUrl)"
                          onerror="this.onerror=null; this.src='@Url.Content("~/images/placeholder-car.png")';"
                          class="card-img-top"
                          style="height: 200px; object-fit: cover;"
@@ -41,15 +41,18 @@ else
                         </p>
 
                         <div class="mt-auto d-flex gap-2 flex-wrap">
-                            
-                            <a class="btn btn-outline-primary"
-                               href="@Url.Action("Details", "Car", new { id = car.Id })">
+
+                            <a asp-controller="Car"
+                               asp-action="Details"
+                               asp-route-id="@car.Id"
+                               asp-route-returnUrl="@Url.Action("AllCars", "Car")"
+                               class="btn btn-outline-primary">
                                 View Offer
                             </a>
 
                             @if (isAuthenticated && car.OwnerId == currentUserId)
                             {
-                                
+
                                 <a class="btn btn-warning"
                                    href="@Url.Action("Edit", "Car", new { id = car.Id })">
                                     Edit
@@ -57,7 +60,7 @@ else
 
                                 <form method="post"
                                       action="@Url.Action("Delete", "Car", new { id = car.Id })">
-                                      
+
                                     <button type="submit" class="btn btn-danger">
                                         Delete
                                     </button>
@@ -65,13 +68,22 @@ else
                             }
                             else if (isAuthenticated)
                             {
-                                
-                                <form method="post"
-                                      action="@Url.Action("AddToFavourites", "Favourites", new { carId = car.Id })">
-                                    <button type="submit" class="btn btn-outline-danger">
-                                        Add to favourites
-                                    </button>
-                                </form>
+                                if (car.isFavourite)
+                                {
+                                    <span class="badge bg-success align-self-center">
+                                         Already in favourites
+                                    </span>
+                                }
+                                else
+                                {
+                                    <form method="post"
+                                          action="@Url.Action("AddToFavourites", "Favourites", new { carId = car.Id })">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit" class="btn btn-outline-danger">
+                                            Add to favourites
+                                        </button>
+                                    </form>
+                                }
                             }
                         </div>
                     </div>

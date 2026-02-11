@@ -23,7 +23,7 @@
 
         <div class="col-md-7">
             <h2 class="mb-1">@Model.Brand @Model.Model <small class="text-muted">(@Model.Year)</small></h2>
-            <h4 class="text-success mb-3">@String.Format("{0:C}", Model.Price)</h4>
+            <h4 class="text-success mb-3">@Model.Price.ToString("N2") €</h4>
 
             <dl class="row">
                 <dt class="col-sm-4">Mileage</dt>
@@ -43,12 +43,19 @@
 
                 <dt class="col-sm-4">Owner</dt>
                 <dd class="col-sm-8">@Model.OwnerName</dd>
+
+
+                <dt class="col-sm-4">Published on</dt>
+                <dd class="col-sm-8">@Model.CreatedOn</dd>
             </dl>
 
             <div class="mt-3">
-                <a asp-controller="Car" asp-action="AllCars" class="btn btn-secondary">Back to list</a>
+                <a href="@(ViewBag.ReturnUrl ?? Url.Action("AllCars", "Car"))"
+                   class="btn btn-secondary">
+                    Back to list
+                </a>
 
-               
+
 
                 @if (isOwner)
                 {

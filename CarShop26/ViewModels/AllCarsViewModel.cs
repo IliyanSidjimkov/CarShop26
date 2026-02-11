@@ -16,6 +16,8 @@
 
         public string OwnerId { get; set; } = null!;
 
+        public bool isFavourite { get; set; }
+
 
 
     }
