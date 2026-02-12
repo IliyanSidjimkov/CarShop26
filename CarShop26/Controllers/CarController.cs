@@ -48,7 +48,7 @@ namespace CarShop26.Controllers
 
         [HttpGet]
         [Authorize]
-        public IActionResult AddCars(string returnUrl = null)
+        public IActionResult AddCars(string returnUrl = null!)
         {
 
             CarsFormModel addCarsFormModel = new CarsFormModel()
@@ -86,12 +86,12 @@ namespace CarShop26.Controllers
             {
                 ModelState.AddModelError(nameof(addCarsFormModel.CategoryId), "Invalid category!");
             }
-            bool fuelTypeExists = Enum.IsDefined(addCarsFormModel.FuelType?.GetType(), addCarsFormModel.FuelType);
+            bool fuelTypeExists = Enum.IsDefined(addCarsFormModel.FuelType?.GetType()!, addCarsFormModel.FuelType);
             if (!fuelTypeExists)
             {
                 ModelState.AddModelError(nameof(addCarsFormModel.FuelType), "Invalid fuel type!");
             }
-            bool gearboxTypeExists = Enum.IsDefined(addCarsFormModel.GearboxType?.GetType(), addCarsFormModel.GearboxType);
+            bool gearboxTypeExists = Enum.IsDefined(addCarsFormModel.GearboxType?.GetType()!, addCarsFormModel.GearboxType);
             if (!gearboxTypeExists)
             {
                 ModelState.AddModelError(nameof(addCarsFormModel.GearboxType), "Invalid gearbox type!");
@@ -115,7 +115,7 @@ namespace CarShop26.Controllers
                 };
                 dbContext.Cars.Add(newCar);
                 dbContext.SaveChanges();
-                return Redirect(returnUrl ?? Url.Action(nameof(AllCars)));
+                return Redirect(returnUrl ?? Url.Action(nameof(AllCars))!);
             }
             catch (Exception e)
             {
@@ -250,7 +250,7 @@ namespace CarShop26.Controllers
             {
                 ModelState.AddModelError(nameof(editCarsFormModel.FuelType), "Invalid fuel type!");
             }
-            bool gearboxTypeExists = Enum.IsDefined(editCarsFormModel.GearboxType?.GetType(), editCarsFormModel.GearboxType);
+            bool gearboxTypeExists = Enum.IsDefined(editCarsFormModel.GearboxType?.GetType()!, editCarsFormModel.GearboxType);
             if (!gearboxTypeExists)
             {
                 ModelState.AddModelError(nameof(editCarsFormModel.GearboxType), "Invalid gearbox type!");
@@ -310,7 +310,32 @@ namespace CarShop26.Controllers
 
             return RedirectToAction(nameof(AllCars));
         }
+
+        [HttpGet]
+        [Authorize]
+        public IActionResult MyCars(int id)
+        {
+
+            string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            IEnumerable<AllCarsViewModel> myCars = dbContext
+                .Cars
+                .Where(c => c.UserId == userId)
+                .Select(c => new AllCarsViewModel()
+                {
+                    Id = c.Id,
+                    Brand = c.Brand,
+                    Model = c.Model,
+                    ImageUrl = c.ImageUrl,
+                    Price = c.Price,
+                    OwnerName = c.User.UserName!,
+                    OwnerId = c.UserId,
+                    isFavourite = dbContext.Favourites.Any(f => f.UserId == userId && f.CarId == c.Id)
+                })
+                .ToList();
+            return View(myCars);
+        }
     }
+
 }
 
 

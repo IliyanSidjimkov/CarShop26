@@ -1,16 +1,14 @@
 ﻿@model IEnumerable<AllCarsViewModel>
-
 @{
     ViewData["Title"] = "All Cars";
 }
-
 <h2 class="mb-4">All Cars</h2>
-
 @if (Model == null || !Model.Any())
 {
     <div class="alert alert-info">No cars available.</div>
 }
 else
 {
+
     @await Html.PartialAsync("_AllAndFavouritesPartial", (Model, "AllCars"))
 }

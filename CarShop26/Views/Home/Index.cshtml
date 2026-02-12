@@ -8,7 +8,7 @@
 <div class="container mt-5">
     <div class="row justify-content-center">
         <div class="col-md-10">
-            <div class="card shadow-lg border-0 rounded-4 p-5 text-center">
+            <div class="card hero-card shadow-lg border-0 rounded-4 p-5 text-center">
 
                 <h1 class="display-5 fw-bold mb-3">
                     Welcome to CarShop26 🚗
@@ -27,9 +27,31 @@
                         Explore our collection of cars, find your next vehicle, or publish your own listing.
                     </p>
 
-                    <a asp-controller="Car" asp-action="AllCars" class="btn btn-primary btn-lg px-5">
-                        🚘 See our car collection
-                    </a>
+                    <div class="hero-actions d-grid gap-3 mb-3">
+                        <a asp-controller="Car" asp-action="AllCars" class="btn btn-primary btn-lg px-5">
+                            🚘 See our car collection
+                        </a>
+                        <a asp-controller="Car" asp-action="AddCars" asp-route-returnUrl="@Context.Request.Path" class="btn btn-primary btn-lg px-5">
+                            ➕ Add Car
+                        </a>
+                        <a asp-controller="Favourites" asp-action="AllFavourites" class="btn btn-primary btn-lg px-5">
+                            ❤️ View Favourites
+                        </a>
+                        <a asp-controller="Car" asp-action="MyCars" class="btn btn-primary btn-lg px-5">
+                            📋 View My Cars
+                        </a>
+                    </div>
+
+                    <form asp-area="Identity"
+                          asp-page="/Account/Logout"
+                          asp-route-returnUrl="@Url.Action("Index", "Home")"
+                          method="post"
+                          class="w-100">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-outline-danger btn-lg w-100">
+                            🚪 Logout
+                        </button>
+                    </form>
                 }
                 else
                 {

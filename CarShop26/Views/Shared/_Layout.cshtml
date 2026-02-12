@@ -1,4 +1,12 @@
-﻿<!DOCTYPE html>
+﻿@{
+    bool isLanding = Context.Request.Path == "/";
+    string? path = Context.Request.Path.Value?.ToLower();
+    bool isIdentityPage = path != null && path.StartsWith("/identity/account");
+    bool isHome = path == "/";
+
+
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -9,37 +17,49 @@
     <link rel="stylesheet" href="~/CarShop26.styles.css" asp-append-version="true" />
 </head>
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">CarShop26</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        
-                          
-                        
-                        @if (User?.Identity?.IsAuthenticated ?? false)
+    @if (!isHome)
+    {
+        <header>
+
+            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+                <div class="container-fluid">
+                    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">CarShop26</a>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                            aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                        <ul class="navbar-nav flex-grow-1">
+
+
+
+                            @if (User?.Identity?.IsAuthenticated ?? false)
+                            {
+
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Car" asp-action="AllCars">All Cars</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Car" asp-action="AddCars" asp-route-returnUrl="@Context.Request.Path">Add Car</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Favourites" asp-action="AllFavourites">Favourite Cars</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="Car" asp-action="MyCars">My Cars</a>
+                                </li>
+
+                            }
+                        </ul>
+                        @if (!isLanding && !isIdentityPage)
                         {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Car" asp-action="AllCars">All Cars</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Car" asp-action="AddCars" asp-route-returnUrl="@Context.Request.Path">Add Car</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Favourites" asp-action="AllFavourites">Favourite Cars</a>
-                            </li>
+                            <partial name="_LoginPartial" />
                         }
-                    </ul>
-                    <partial name="_LoginPartial" />
+                    </div>
                 </div>
-            </div>
-        </nav>
-    </header>
+            </nav>
+        </header>
+    }
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()

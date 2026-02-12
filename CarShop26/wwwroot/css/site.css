@@ -77,3 +77,69 @@ input[type=number]::-webkit-outer-spin-button {
 input[type=number] {
     -moz-appearance: textfield;
 }
+
+body {
+    background: radial-gradient(circle at top, #eef3ff, #ffffff 60%);
+}
+
+.hero-card {
+    max-width: 900px;
+    margin: 80px auto;
+    padding: 48px 40px;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #ffffff 0%, #f7f9ff 100%);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
+    animation: fadeInUp 0.6s ease-out;
+}
+
+
+    .hero-card h1 {
+        font-weight: 800;
+        letter-spacing: -0.5px;
+    }
+
+    
+    .hero-card .lead {
+        color: #6c757d;
+    }
+
+    
+    .hero-actions .btn,
+    .hero-card form .btn {
+        font-size: 1.05rem;
+        padding: 14px 20px;
+        border-radius: 12px;
+        transition: all 0.2s ease;
+    }
+
+       
+        .hero-actions .btn:hover,
+        .hero-card form .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(13, 110, 253, 0.25);
+        }
+
+        .hero-card form .btn:hover {
+            box-shadow: 0 8px 20px rgba(220, 53, 69, 0.35);
+        }
+
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+
+@media (max-width: 576px) {
+    .hero-card {
+        margin: 30px 12px;
+        padding: 32px 20px;
+    }
+}
