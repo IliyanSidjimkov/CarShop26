@@ -4,6 +4,7 @@ using CarShop26.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CarShop26.Data.Migrations
 {
     [DbContext(typeof(CarShop26DbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260212184844_SeedingUser")]
+    partial class SeedingUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -82,24 +85,6 @@ namespace CarShop26.Data.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Cars");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Brand = "Audi",
-                            CategoryId = 8,
-                            CityId = 1,
-                            CreatedOn = new DateTime(2026, 2, 13, 1, 11, 28, 287, DateTimeKind.Local).AddTicks(9727),
-                            FuelType = 1,
-                            GearboxType = 1,
-                            ImageUrl = "https://alarmsyst-bg.com/cdn/shop/files/audi-a4-b8-8k-facelift-2009-2015-1499x843_1024x1024.jpg?v=1747237269",
-                            Mileage = 120000,
-                            Model = "A4",
-                            Price = 15000.00m,
-                            UserId = "fe0f0881-a76d-4cd6-9a79-3f6adbd5f82f",
-                            Year = 2015
-                        });
                 });
 
             modelBuilder.Entity("CarShop26.Models.Category", b =>
@@ -373,7 +358,7 @@ namespace CarShop26.Data.Migrations
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@TEST.BG",
                             NormalizedUserName = "ADMIN@TEST.BG",
-                            PasswordHash = "AQAAAAIAAYagAAAAEGo7CT9J60UZupVlsWbQ0T9jQLIsO77fUR1tGPQ5awS0Yxzs5l07GuWAXC7ey4iZ2g==",
+                            PasswordHash = "AQAAAAIAAYagAAAAECqos+SFpqsPFjxJQ5BveUcy+wWQeG/jpinvi/bc0Lu2wyqzq52HpzUflrZMdrdkng==",
                             PhoneNumberConfirmed = false,
                             SecurityStamp = "YIXYIXE6GJSSN4KVYJROXMJQKQ2EVPJT",
                             TwoFactorEnabled = false,

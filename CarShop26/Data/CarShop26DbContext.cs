@@ -1,6 +1,7 @@
 ﻿
 namespace CarShop26.Data
 {
+    using CarShop26.Data.Configuration;
     using CarShop26.Models;
     using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
     using Microsoft.EntityFrameworkCore;
@@ -26,7 +27,11 @@ namespace CarShop26.Data
                 .ToList()
                 .ForEach(CarAdded =>
                 {
-                    CarAdded.Entity.CreatedOn = DateTime.UtcNow;
+                    if (CarAdded == default)
+                    {
+                        CarAdded.Entity.CreatedOn = DateTime.UtcNow;
+                    }
+
                 });
             return base.SaveChanges();
         }
@@ -34,9 +39,10 @@ namespace CarShop26.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-           base.OnModelCreating(builder);
+            base.OnModelCreating(builder);
             builder.ApplyConfigurationsFromAssembly(typeof(CarShop26DbContext).Assembly);
-           
+            
+
         }
 
     }

@@ -43,6 +43,11 @@ namespace CarShop26.Data.Configuration
             {
                 Id = 7,
                 CategoryName = "Pickup Truck"
+            },
+            new Category()
+            {
+                Id = 8,
+                CategoryName = "Sedan"
             }
         };
         public void Configure(EntityTypeBuilder<Category> entity)

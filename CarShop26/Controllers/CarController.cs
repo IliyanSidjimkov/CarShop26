@@ -35,7 +35,7 @@ namespace CarShop26.Controllers
                     ImageUrl = c.ImageUrl,
                     Price = c.Price,
                     OwnerName = c.User.UserName!,
-                    OwnerId = c.UserId,
+                    OwnerId = c.UserId!,
                     isFavourite = userId != null &&
                     dbContext.Favourites.Any(f => f.UserId == userId && f.CarId == c.Id)
 
@@ -63,7 +63,7 @@ namespace CarShop26.Controllers
 
         [HttpPost]
         [Authorize]
-        public IActionResult AddCars(CarsFormModel addCarsFormModel, string returnUrl = null)
+        public IActionResult AddCars(CarsFormModel addCarsFormModel, string returnUrl)
         {
             
             if (!ModelState.IsValid)
@@ -96,7 +96,7 @@ namespace CarShop26.Controllers
             {
                 ModelState.AddModelError(nameof(addCarsFormModel.GearboxType), "Invalid gearbox type!");
             }
-
+            string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             try
             {
                 Car newCar = new Car()
@@ -111,7 +111,7 @@ namespace CarShop26.Controllers
                     ImageUrl = addCarsFormModel.ImageUrl,
                     CityId = addCarsFormModel.CityId,
                     CategoryId = addCarsFormModel.CategoryId,
-                    UserId = User.FindFirstValue(ClaimTypes.NameIdentifier)!
+                    UserId = userId
                 };
                 dbContext.Cars.Add(newCar);
                 dbContext.SaveChanges();
@@ -126,7 +126,7 @@ namespace CarShop26.Controllers
         }
         [HttpGet]
         [Authorize]
-        public IActionResult Details(int id, string? returnUrl)
+        public IActionResult Details(int id, string returnUrl)
         {
             Car? carDetails = dbContext
                 .Cars
@@ -154,9 +154,10 @@ namespace CarShop26.Controllers
                 City = carDetails.City.CityName,
                 Category = carDetails.Category.CategoryName,
                 OwnerName = carDetails.User.UserName!,
-                OwnerId = carDetails.UserId,
+                OwnerId = carDetails.UserId!,
                 CreatedOn = carDetails.CreatedOn
             };
+
             ViewBag.ReturnUrl = returnUrl;
 
 
@@ -164,7 +165,7 @@ namespace CarShop26.Controllers
         }
         [HttpGet]
         [Authorize]
-        public IActionResult Edit(int id)
+        public IActionResult Edit(int id, string returnUrl)
         {
 
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
@@ -177,7 +178,7 @@ namespace CarShop26.Controllers
                 return NotFound();
             }
 
-            if (carToEdit.UserId.ToLowerInvariant() != userId.ToLowerInvariant())
+            if (carToEdit.UserId!.ToLowerInvariant() != userId.ToLowerInvariant())
             {
                 return Unauthorized();
             }
@@ -198,6 +199,8 @@ namespace CarShop26.Controllers
                 Cities = dbContext.Cities.OrderBy(city => city.CityName).ToList(),
                 Categories = dbContext.Categories.OrderBy(category => category.CategoryName).ToList()
             };
+            ViewBag.ReturnUrl = returnUrl;
+
             return View(editCarsFormModel);
         }
 
@@ -218,7 +221,7 @@ namespace CarShop26.Controllers
                 return NotFound();
             }
 
-            if (carToEdit.UserId.ToLowerInvariant() != userId.ToLowerInvariant())
+            if (carToEdit.UserId!.ToLowerInvariant() != userId.ToLowerInvariant())
             {
                 return Unauthorized();
             }
@@ -300,7 +303,7 @@ namespace CarShop26.Controllers
                 return NotFound();
             }
 
-            if (car.UserId.ToLowerInvariant() != userId.ToLowerInvariant())
+            if (car.UserId!.ToLowerInvariant() != userId.ToLowerInvariant())
             {
                 return Unauthorized();
             }
@@ -328,8 +331,8 @@ namespace CarShop26.Controllers
                     ImageUrl = c.ImageUrl,
                     Price = c.Price,
                     OwnerName = c.User.UserName!,
-                    OwnerId = c.UserId,
-                    isFavourite = dbContext.Favourites.Any(f => f.UserId == userId && f.CarId == c.Id)
+                    OwnerId = c.UserId!
+                    
                 })
                 .ToList();
             return View(myCars);

@@ -43,17 +43,17 @@ namespace CarShop26.Models
 
         //Connections//
         [Required]
-        public string UserId { get; set; } = null!;
+        public string? UserId { get; set; }
 
         public virtual IdentityUser User { get; set; } = null!;
 
         [Required]
         public int CityId { get; set; }
-        public City City { get; set; } = null!;
+        public virtual City City { get; set; } = null!;
 
         [Required]
         public int CategoryId { get; set; }
-        public Category Category { get; set; } = null!;
+        public virtual Category Category { get; set; } = null!;
 
 
 

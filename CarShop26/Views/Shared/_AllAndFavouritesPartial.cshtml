@@ -2,8 +2,8 @@
 @model (IEnumerable<AllCarsViewModel> Cars, string Mode)
 
 @{
-    var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-    var isAuthenticated = User.Identity?.IsAuthenticated == true;
+    string? currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+    bool isAuthenticated = User.Identity?.IsAuthenticated == true;
 }
 
 <div class="row">
@@ -35,16 +35,20 @@
                         <a asp-controller="Car"
                            asp-action="Details"
                            asp-route-id="@car.Id"
+                           asp-route-returnUrl="@(Context.Request.Path + Context.Request.QueryString)"
                            class="btn btn-outline-primary btn-sm">
                             View Offer
                         </a>
 
-                        @if (Model.Mode == "AllCars")
+                        @if (Model.Mode == "AllCars" || Model.Mode == "MyCars")
                         {
                             if (isAuthenticated && car.OwnerId == currentUserId)
                             {
-                                <a class="btn btn-warning btn-sm"
-                                   href="@Url.Action("Edit", "Car", new { id = car.Id })">
+                                <a asp-controller="Car"
+                                   asp-action="Edit"
+                                   asp-route-id="@car.Id"
+                                   asp-route-returnUrl="@(Context.Request.Path + Context.Request.QueryString)"
+                                   class="btn btn-warning btn-sm">
                                     Edit
                                 </a>
 
@@ -60,7 +64,7 @@
                             {
                                 if (car.isFavourite)
                                 {
-                                    <span class="btn btn-outline-secondary btn-sm disabled">
+                                    <span class="btn btn-outline-dark btn-sm disabled">
                                         In favourites
                                     </span>
                                 }
@@ -69,7 +73,7 @@
                                     <form method="post"
                                           action="@Url.Action("AddToFavourites", "Favourites", new { carId = car.Id })">
                                         @Html.AntiForgeryToken()
-                                        <button type="submit" class="btn btn-outline-danger btn-sm">
+                                        <button type="submit" class="btn btn-outline-dark btn-sm">
                                             Add to favourites
                                         </button>
                                     </form>
