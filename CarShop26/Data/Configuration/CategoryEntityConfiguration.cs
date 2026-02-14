@@ -48,6 +48,21 @@ namespace CarShop26.Data.Configuration
             {
                 Id = 8,
                 CategoryName = "Sedan"
+            },
+            new Category()
+            {
+                Id = 9,
+                CategoryName = "Hatchback"
+            },
+            new Category()
+            {
+                Id = 10,
+                CategoryName = "SUV"
+            },
+            new Category()
+            {
+                Id = 11,
+                CategoryName = "Sportback"
             }
         };
         public void Configure(EntityTypeBuilder<Category> entity)
