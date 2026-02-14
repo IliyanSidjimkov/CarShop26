@@ -1,3 +1,11 @@
 <Solution>
-  <Project Path="CarShop26/CarShop26.csproj" />
+  <Folder Name="/Data/">
+    <Project Path="CarShop26.Data.Models/CarShop26.Data.Models.csproj" Id="76d169f2-e118-47cb-aa9a-7937a81b0824" />
+    <Project Path="CarShop26.Data/CarShop26.Data.csproj" Id="d1dff43e-074b-49e6-a29f-dc29ff28b467" />
+  </Folder>
+  <Folder Name="/Web/">
+    <Project Path="CarShop26.ViewModels/CarShop26.ViewModels.csproj" Id="c9c16b7b-c425-4ded-b1f3-05649da5fa47" />
+    <Project Path="CarShop26/CarShop26.csproj" />
+  </Folder>
+  <Project Path="CarShop26.Common/CarShop26.Common.csproj" Id="ab9739ef-55dd-4a0a-bfef-686888c66880" />
 </Solution>
