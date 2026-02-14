@@ -8,7 +8,7 @@ using System.Security.Claims;
 
 namespace CarShop26.Controllers
 {
-    public class CarController : Controller
+    public class CarController : Controller  
     {
         private readonly CarShop26DbContext dbContext;
         public CarController(CarShop26DbContext dbContext)
