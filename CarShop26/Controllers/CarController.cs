@@ -1,6 +1,5 @@
 ﻿using CarShop26.Data;
-using CarShop26.Models;
-using CarShop26.Services.Core;
+
 using CarShop26.Services.Core.Interfaces;
 using CarShop26.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -14,9 +13,8 @@ namespace CarShop26.Controllers
     {
         private readonly CarShop26DbContext dbContext;
         private readonly ICarService carService;
-        public CarController(CarShop26DbContext dbContext, ICarService carService)
+        public CarController( ICarService carService)
         {
-            this.dbContext = dbContext;
             this.carService = carService;
         }
 

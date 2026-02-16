@@ -29,8 +29,8 @@ namespace CarShop26.Services.Core
                 Year = addCarViewModel.Year,
                 Price = addCarViewModel.Price,
                 Mileage = addCarViewModel.Mileage,
-                FuelType = addCarViewModel.FuelType.Value,
-                GearboxType = addCarViewModel.GearboxType.Value,
+                FuelType = addCarViewModel.FuelType!.Value,
+                GearboxType = addCarViewModel.GearboxType!.Value,
                 ImageUrl = addCarViewModel.ImageUrl,
                 CityId = addCarViewModel.CityId,
                 CategoryId = addCarViewModel.CategoryId,
@@ -66,7 +66,7 @@ namespace CarShop26.Services.Core
         {
             Car? carToEdit = await dbContext.Cars
              .FirstOrDefaultAsync(c => c.Id == id);
-            if (carToEdit.UserId!.ToLowerInvariant() != userId.ToLowerInvariant())
+            if (carToEdit!.UserId!.ToLowerInvariant() != userId.ToLowerInvariant())
             {
                 throw new UnauthorizedAccessException();
             }
@@ -76,8 +76,8 @@ namespace CarShop26.Services.Core
             carToEdit.Year = editCarViewModel.Year;
             carToEdit.Price = editCarViewModel.Price;
             carToEdit.Mileage = editCarViewModel.Mileage;
-            carToEdit.FuelType = editCarViewModel.FuelType.Value;
-            carToEdit.GearboxType = editCarViewModel.GearboxType.Value;
+            carToEdit.FuelType = editCarViewModel.FuelType!.Value;
+            carToEdit.GearboxType = editCarViewModel.GearboxType!.Value;
             carToEdit.ImageUrl = editCarViewModel.ImageUrl;
             carToEdit.CityId = editCarViewModel.CityId;
             carToEdit.CategoryId = editCarViewModel.CategoryId;
