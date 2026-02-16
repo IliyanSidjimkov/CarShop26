@@ -9,7 +9,7 @@ This project is designed as a layered MVC application following good OOP practic
 
 ## 🛠️ Technologies
 
-- ASP.NET Core MVC (.NET 6+ / .NET 8)  
+- ASP.NET Core MVC (.NET 8)  
 - Entity Framework Core  
 - Microsoft SQL Server  
 - ASP.NET Core Identity (Authentication & Authorization)  
