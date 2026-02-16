@@ -1,5 +1,7 @@
 ﻿using CarShop26.Data;
 using CarShop26.Models;
+using CarShop26.Services.Core;
+using CarShop26.Services.Core.Interfaces;
 using CarShop26.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,36 +13,21 @@ namespace CarShop26.Controllers
     public class CarController : Controller 
     {
         private readonly CarShop26DbContext dbContext;
-        public CarController(CarShop26DbContext dbContext)
+        private readonly ICarService carService;
+        public CarController(CarShop26DbContext dbContext, ICarService carService)
         {
             this.dbContext = dbContext;
+            this.carService = carService;
         }
 
         [HttpGet]
         [Authorize]
-        public IActionResult AllCars()
+        public async Task<IActionResult> AllCars()
         {
             string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            IEnumerable<AllCarsViewModel> allCars = dbContext
-                .Cars
-                .AsNoTracking()
-                .OrderBy(c => c.Brand)
-                .ThenBy(c => c.Model)
-                .Select(c => new AllCarsViewModel()
-                {
-                    Id = c.Id,
-                    Brand = c.Brand,
-                    Model = c.Model,
-                    ImageUrl = c.ImageUrl,
-                    Price = c.Price,
-                    OwnerName = c.User.UserName!,
-                    OwnerId = c.UserId!,
-                    isFavourite = userId != null &&
-                    dbContext.Favourites.Any(f => f.UserId == userId && f.CarId == c.Id)
-
-                })
-                .ToList();
+            IEnumerable<AllCarsViewModel> allCars = await carService
+                .GetAllCarsAsync(userId);
 
             return View(allCars);
         }
@@ -48,14 +35,13 @@ namespace CarShop26.Controllers
 
         [HttpGet]
         [Authorize]
-        public IActionResult AddCars(string returnUrl = null!)
+        public async Task<IActionResult> AddCars(string returnUrl = null!)
         {
 
-            CarsFormModel addCarsFormModel = new CarsFormModel()
-            {
-                Cities = dbContext.Cities.OrderBy(city => city.CityName).ToList(),
-                Categories = dbContext.Categories.OrderBy(category => category.CategoryName).ToList()
-            };
+            CarsFormModel addCarsFormModel = await carService
+                .GetCarFormModelWhithCitiesAndCategoriesAsync();
+
+             
             ViewBag.ReturnUrl = returnUrl;
 
             return View(addCarsFormModel);
@@ -63,25 +49,24 @@ namespace CarShop26.Controllers
 
         [HttpPost]
         [Authorize]
-        public IActionResult AddCars(CarsFormModel addCarsFormModel, string returnUrl)
+        public async Task<IActionResult> AddCars(CarsFormModel addCarsFormModel)
         {
-            
+
             if (!ModelState.IsValid)
             {
-                addCarsFormModel.Cities = dbContext.Cities.OrderBy(city => city.CityName).ToList();
-                addCarsFormModel.Categories = dbContext.Categories.OrderBy(category => category.CategoryName).ToList();
-                ViewBag.ReturnUrl = returnUrl;
+                addCarsFormModel = await carService.GetCarFormModelWhithCitiesAndCategoriesAsync();
+
                 return View(addCarsFormModel);
 
             }
-            bool cityExists = dbContext.Cities.Any(city => city.Id == addCarsFormModel.CityId);
+            bool cityExists = await dbContext.Cities.AnyAsync(city => city.Id == addCarsFormModel.CityId);
 
             if (!cityExists)
             {
                 ModelState.AddModelError(nameof(addCarsFormModel.CityId), "Invalid city!");
             }
 
-            bool categoryExists = dbContext.Categories.Any(category => category.Id == addCarsFormModel.CategoryId);
+            bool categoryExists = await dbContext.Categories.AnyAsync(category => category.Id == addCarsFormModel.CategoryId);
             if (!categoryExists)
             {
                 ModelState.AddModelError(nameof(addCarsFormModel.CategoryId), "Invalid category!");
@@ -96,26 +81,12 @@ namespace CarShop26.Controllers
             {
                 ModelState.AddModelError(nameof(addCarsFormModel.GearboxType), "Invalid gearbox type!");
             }
-            string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            
             try
-            {
-                Car newCar = new Car()
-                {
-                    Brand = addCarsFormModel.Brand,
-                    Model = addCarsFormModel.Model,
-                    Year = addCarsFormModel.Year,
-                    Price = addCarsFormModel.Price,
-                    Mileage = addCarsFormModel.Mileage,
-                    FuelType = addCarsFormModel.FuelType.Value,
-                    GearboxType = addCarsFormModel.GearboxType.Value,
-                    ImageUrl = addCarsFormModel.ImageUrl,
-                    CityId = addCarsFormModel.CityId,
-                    CategoryId = addCarsFormModel.CategoryId,
-                    UserId = userId
-                };
-                dbContext.Cars.Add(newCar);
-                dbContext.SaveChanges();
-                return Redirect(returnUrl ?? Url.Action(nameof(AllCars))!);
+            { 
+                string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+               await carService.AddCarAsync(addCarsFormModel, userId!);
+                return Redirect(Url.Action(nameof(AllCars))!);
             }
             catch (Exception e)
             {
@@ -126,37 +97,15 @@ namespace CarShop26.Controllers
         }
         [HttpGet]
         [Authorize]
-        public IActionResult Details(int id, string returnUrl)
+        public async Task<IActionResult> Details(int id, string returnUrl)
         {
-            Car? carDetails = dbContext
-                .Cars
-                .Include(c => c.User)
-                .Include(c => c.City)
-                .Include(c => c.Category)
-                .AsNoTracking()
-                .SingleOrDefault(c => c.Id == id);
+            DetailsViewModel? detailsViewModel = await carService.GetDetailsAsync(id, returnUrl);
 
-            if (carDetails == null)
+            if (detailsViewModel == null)
             {
                 return NotFound();
             }
-            DetailsViewModel detailsViewModel = new DetailsViewModel()
-            {
-                Id = carDetails.Id,
-                Brand = carDetails.Brand,
-                Model = carDetails.Model,
-                Year = carDetails.Year,
-                Price = (int)carDetails.Price,
-                Mileage = carDetails.Mileage,
-                ImageUrl = carDetails.ImageUrl,
-                FuelType = carDetails.FuelType.ToString(),
-                GearboxType = carDetails.GearboxType.ToString(),
-                City = carDetails.City.CityName,
-                Category = carDetails.Category.CategoryName,
-                OwnerName = carDetails.User.UserName!,
-                OwnerId = carDetails.UserId!,
-                CreatedOn = carDetails.CreatedOn
-            };
+            
 
             ViewBag.ReturnUrl = returnUrl;
 
@@ -165,90 +114,57 @@ namespace CarShop26.Controllers
         }
         [HttpGet]
         [Authorize]
-        public IActionResult Edit(int id, string returnUrl)
+        public async Task<IActionResult> Edit(int id, string returnUrl)
         {
 
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-            Car? carToEdit = dbContext
-                    .Cars
-                    .AsNoTracking()
-                    .SingleOrDefault(c => c.Id == id);
-            if (carToEdit == null)
-            {
-                return NotFound();
-            }
+            CarsFormModel? carsFormModel = await carService.GetCarForEditAsync(id, userId);
 
-            if (carToEdit.UserId!.ToLowerInvariant() != userId.ToLowerInvariant())
-            {
-                return Unauthorized();
-            }
-
-            CarsFormModel editCarsFormModel = new CarsFormModel()
-            {
-
-                Brand = carToEdit.Brand,
-                Model = carToEdit.Model,
-                Year = carToEdit.Year,
-                Price = carToEdit.Price,
-                Mileage = carToEdit.Mileage,
-                FuelType = carToEdit.FuelType,
-                GearboxType = carToEdit.GearboxType,
-                ImageUrl = carToEdit.ImageUrl,
-                CityId = carToEdit.CityId,
-                CategoryId = carToEdit.CategoryId,
-                Cities = dbContext.Cities.OrderBy(city => city.CityName).ToList(),
-                Categories = dbContext.Categories.OrderBy(category => category.CategoryName).ToList()
-            };
             ViewBag.ReturnUrl = returnUrl;
 
-            return View(editCarsFormModel);
+            return View(carsFormModel);
         }
 
         [HttpPost]
         [Authorize]
-        public IActionResult Edit(int id, CarsFormModel editCarsFormModel)
+        public async Task <IActionResult> Edit(int id, CarsFormModel editCarsFormModel)
         {
 
-            editCarsFormModel.Cities = dbContext.Cities.OrderBy(city => city.CityName).ToList();
-            editCarsFormModel.Categories = dbContext.Categories.OrderBy(category => category.CategoryName).ToList();
+            editCarsFormModel =  await carService.GetCarFormModelWhithCitiesAndCategoriesAsync();
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-            Car? carToEdit = dbContext
-                    .Cars
-                    .AsNoTracking()
-                    .SingleOrDefault(c => c.Id == id);
-            if (carToEdit == null)
+
+            bool carExists = await carService.CarExistsaAsync(id);
+
+            if (!carExists)
             {
                 return NotFound();
             }
 
-            if (carToEdit.UserId!.ToLowerInvariant() != userId.ToLowerInvariant())
-            {
-                return Unauthorized();
-            }
+           
             if (!ModelState.IsValid)
             {
                 return View(editCarsFormModel);
             }
             if (!ModelState.IsValid)
             {
-                editCarsFormModel.Cities = dbContext.Cities.OrderBy(city => city.CityName).ToList();
-                editCarsFormModel.Categories = dbContext.Categories.OrderBy(category => category.CategoryName).ToList();
+                editCarsFormModel = await carService.GetCarFormModelWhithCitiesAndCategoriesAsync();
+
                 return View(editCarsFormModel);
 
             }
-            bool cityExists = dbContext.Cities.Any(city => city.Id == editCarsFormModel.CityId);
+            bool cityExists = await  dbContext.Cities.AnyAsync(city => city.Id == editCarsFormModel.CityId);
 
             if (!cityExists)
             {
                 ModelState.AddModelError(nameof(editCarsFormModel.CityId), "Invalid city!");
             }
 
-            bool categoryExists = dbContext.Categories.Any(category => category.Id == editCarsFormModel.CategoryId);
+            bool categoryExists = await dbContext.Categories.AnyAsync(category => category.Id == editCarsFormModel.CategoryId);
             if (!categoryExists)
             {
                 ModelState.AddModelError(nameof(editCarsFormModel.CategoryId), "Invalid category!");
             }
-            bool fuelTypeExists = Enum.IsDefined(editCarsFormModel.FuelType?.GetType(), editCarsFormModel.FuelType);
+            bool fuelTypeExists = Enum.IsDefined(editCarsFormModel.FuelType?.GetType()!, editCarsFormModel.FuelType);
             if (!fuelTypeExists)
             {
                 ModelState.AddModelError(nameof(editCarsFormModel.FuelType), "Invalid fuel type!");
@@ -261,24 +177,8 @@ namespace CarShop26.Controllers
 
             try
             {
-                carToEdit.Brand = editCarsFormModel.Brand;
-                carToEdit.Model = editCarsFormModel.Model;
-                carToEdit.Year = editCarsFormModel.Year;
-                carToEdit.Price = editCarsFormModel.Price;
-                carToEdit.Mileage = editCarsFormModel.Mileage;
-                carToEdit.FuelType = editCarsFormModel.FuelType.Value;
-                carToEdit.GearboxType = editCarsFormModel.GearboxType.Value;
-                carToEdit.ImageUrl = editCarsFormModel.ImageUrl;
-                carToEdit.CityId = editCarsFormModel.CityId;
-                carToEdit.CategoryId = editCarsFormModel.CategoryId;
-                carToEdit.CreatedOn = DateTime.UtcNow;
-
-                dbContext.Cars.Update(carToEdit);
-                dbContext.SaveChanges();
+                await carService.EditCarAsync(id, editCarsFormModel, userId);
                 return RedirectToAction(nameof(Details), new { id });
-
-
-
             }
             catch (Exception e)
             {
@@ -294,47 +194,20 @@ namespace CarShop26.Controllers
 
         [HttpPost]
         [Authorize]
-        public IActionResult Delete(int id)
+        public async Task <IActionResult> Delete(int id)
         {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
-            Car? car = dbContext.Cars.FirstOrDefault(c => c.Id == id);
-            if (car == null)
-            {
-                return NotFound();
-            }
-
-            if (car.UserId!.ToLowerInvariant() != userId.ToLowerInvariant())
-            {
-                return Unauthorized();
-            }
-            dbContext.Cars.Remove(car);
-            dbContext.SaveChanges();
-
-
+              await carService.DeleteCarAsync(id, userId);
             return RedirectToAction(nameof(AllCars));
         }
 
         [HttpGet]
         [Authorize]
-        public IActionResult MyCars(int id)
+        public async Task<IActionResult> MyCars(int id)
         {
 
             string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            IEnumerable<AllCarsViewModel> myCars = dbContext
-                .Cars
-                .Where(c => c.UserId == userId)
-                .Select(c => new AllCarsViewModel()
-                {
-                    Id = c.Id,
-                    Brand = c.Brand,
-                    Model = c.Model,
-                    ImageUrl = c.ImageUrl,
-                    Price = c.Price,
-                    OwnerName = c.User.UserName!,
-                    OwnerId = c.UserId!
-                    
-                })
-                .ToList();
+            IEnumerable<AllCarsViewModel> myCars = await carService.GetMyCarsAsync(userId);
             return View(myCars);
         }
     }

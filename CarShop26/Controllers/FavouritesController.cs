@@ -1,5 +1,7 @@
 ﻿using CarShop26.Data;
 using CarShop26.Models;
+using CarShop26.Services.Core;
+using CarShop26.Services.Core.Interfaces;
 using CarShop26.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,63 +13,36 @@ namespace CarShop26.Controllers
     public class FavouritesController : Controller
     {
         private readonly CarShop26DbContext dbContext;
-        public FavouritesController(CarShop26DbContext dbContext)
+        private readonly IFavouriteService favouriteService;
+        public FavouritesController(CarShop26DbContext dbContext, IFavouriteService favouriteService)
         {
             this.dbContext = dbContext;
+            this.favouriteService = favouriteService;
         }
         [HttpGet]
         [Authorize]
-        public IActionResult AllFavourites()
+        public async Task<IActionResult> AllFavourites()
         {
             string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            List<AllCarsViewModel> favoriteCars = dbContext.Favourites
-                .Include(f => f.Car)
-                .Include(f => f.User)
-                .Where(f => f.UserId == userId)
-                .Select(f => new AllCarsViewModel
-                {
-                    Id = f.Car.Id,
-                    Brand = f.Car.Brand,
-                    Model = f.Car.Model,
-                    ImageUrl = f.Car.ImageUrl,
-                    Price = f.Car.Price,
-                    OwnerName = f.Car.User.UserName!,
-                    OwnerId = f.Car.UserId
-                })
-                .ToList();
+            IEnumerable<AllCarsViewModel> favoriteCars = await favouriteService.GetAllFavouritesAsync(userId!);
             return View(favoriteCars);
         }
 
         [HttpPost]
         [Authorize]
-        public IActionResult AddToFavourites(int carId)
+        public async Task <IActionResult> AddToFavourites(int carId)
         {
-            string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            bool alreadyFavorited = dbContext.Favourites.Any(f => f.CarId == carId && f.UserId == userId);
-            if (!alreadyFavorited)
-            {
-                dbContext.Favourites.Add(new Favourites
-                {
-                    UserId = userId!,
-                    CarId = carId
-
-                });
-                dbContext.SaveChanges();
-            }
+            string? userId =  User.FindFirstValue(ClaimTypes.NameIdentifier);
+            await favouriteService.AddToFavouritesAsync(carId, userId);
             return RedirectToAction("AllCars", "Car");
 
         }
         [HttpPost]
         [Authorize]
-        public IActionResult RemoveFromFavourites(int carId)
+        public async Task<IActionResult> RemoveFromFavourites(int carId)
         {
             string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            Favourites? favourite = dbContext.Favourites.FirstOrDefault(f => f.CarId == carId && f.UserId == userId);
-            if (favourite != null)
-            {
-                dbContext.Favourites.Remove(favourite);
-                dbContext.SaveChanges();
-            }
+            await favouriteService.RemoveToFavouritesAsync(carId, userId);
             return RedirectToAction("AllFavourites", "Favourites");
 
         }

@@ -1,4 +1,6 @@
 using CarShop26.Data;
+using CarShop26.Services.Core;
+using CarShop26.Services.Core.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -21,10 +23,12 @@ namespace CarShop26
             builder.Services.AddDefaultIdentity<IdentityUser>(options =>
             {
                 ConfigureIdentity(options, builder.Configuration);
-
-
             })
                 .AddEntityFrameworkStores<CarShop26DbContext>();
+
+            // Custom services//
+            builder.Services.AddScoped<ICarService, CarService>();
+            builder.Services.AddScoped<IFavouriteService, FavouriteService>();
 
             //Allows us to use space when creating username//
             builder.Services.Configure<IdentityOptions>(options =>

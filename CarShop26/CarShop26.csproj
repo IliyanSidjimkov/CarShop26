@@ -5,6 +5,8 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>aspnet-CarShop26-0c94d26c-0448-4346-bf77-7f5e8c5fa95f</UserSecretsId>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <StartupObject>CarShop26.Program</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,6 +23,7 @@
     <ProjectReference Include="..\CarShop26.Common\CarShop26.Common.csproj" />
     <ProjectReference Include="..\CarShop26.Data.Models\CarShop26.Data.Models.csproj" />
     <ProjectReference Include="..\CarShop26.Data\CarShop26.Data.csproj" />
+    <ProjectReference Include="..\CarShop26.Services.Core\CarShop26.Services.Core.csproj" />
     <ProjectReference Include="..\CarShop26.ViewModels\CarShop26.ViewModels.csproj" />
   </ItemGroup>
 
