@@ -93,14 +93,20 @@ In appsettings.json, update the connection string:
 ```
 Change only the server name to match your local SQL Server instance, for example:
 
+```
 localhost\SQLEXPRESS
-
+```
+```
 DESKTOP-12345\SQLEXPRESS
-
+```
+```
 localhost
+```
 
 3️⃣ Apply migrations
+```
 Update-Database
+```
 4️⃣ Run the application
 Start the project from Visual Studio or Rider.
 
