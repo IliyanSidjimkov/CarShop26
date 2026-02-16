@@ -85,7 +85,7 @@ The project is structured in layers:
 ```
 git clone https://github.com/your-username/CarShop26.git
 ```
-2️⃣ Configure database connection
+### 2️⃣ Configure database connection
 In appsettings.json, update the connection string:
 
 ```
@@ -103,11 +103,11 @@ DESKTOP-12345\SQLEXPRESS
 localhost
 ```
 
-3️⃣ Apply migrations
+### 3️⃣ Apply migrations
 ```
 Update-Database
 ```
-4️⃣ Run the application
+###4️⃣ Run the application
 Start the project from Visual Studio or Rider.
 
 🧭 Navigation
