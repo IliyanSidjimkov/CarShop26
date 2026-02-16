@@ -66,7 +66,7 @@ namespace CarShop26.Services.Core
         {
             Car? carToEdit = await dbContext.Cars
              .FirstOrDefaultAsync(c => c.Id == id);
-            if (carToEdit.UserId!.ToLowerInvariant() != userId.ToLowerInvariant())
+            if (carToEdit.UserId! != userId)
             {
                 throw new UnauthorizedAccessException();
             }
