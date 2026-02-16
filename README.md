@@ -48,6 +48,7 @@ This project is designed as a layered MVC application following good OOP practic
 
 ### 🔐 Default Test User
 Email: admin@test.bg
+
 Password: Test123/
 
 
@@ -95,11 +96,9 @@ Change only the server name to match your local SQL Server instance, for example
 
 ```
 localhost\SQLEXPRESS
-```
-```
+
 DESKTOP-12345\SQLEXPRESS
-```
-```
+
 localhost
 ```
 
@@ -107,7 +106,7 @@ localhost
 ```
 Update-Database
 ```
-###4️⃣ Run the application
+### 4️⃣ Run the application
 Start the project from Visual Studio or Rider.
 
 🧭 Navigation
@@ -124,9 +123,7 @@ Start the project from Visual Studio or Rider.
 
 - Login / Register
 
-📄 License
-This project is created for educational purposes.
-
 👨‍💻 Author
 CarShop26 – SoftUni, ASP.NET Fundamentals - January 2026 Final Project
-Developed by: [Iliyan Sidzhimkov]
+
+Developed by: Iliyan Sidzhimkov
