@@ -111,17 +111,18 @@ Update-Database
 Start the project from Visual Studio or Rider.
 
 🧭 Navigation
-Home
 
-All Cars
+- Home
 
-Add Car
+- All Cars
 
-Favourites
+- Add Car
 
-My Cars
+- Favourites
 
-Login / Register
+- My Cars
+
+- Login / Register
 
 📄 License
 This project is created for educational purposes.
