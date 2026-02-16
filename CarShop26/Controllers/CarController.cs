@@ -1,5 +1,5 @@
 ﻿using CarShop26.Data;
-
+using CarShop26.Models;
 using CarShop26.Services.Core.Interfaces;
 using CarShop26.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -11,11 +11,12 @@ namespace CarShop26.Controllers
 {
     public class CarController : Controller 
     {
-        private readonly CarShop26DbContext dbContext;
+       
         private readonly ICarService carService;
         public CarController( ICarService carService)
         {
             this.carService = carService;
+           
         }
 
         [HttpGet]
@@ -57,24 +58,17 @@ namespace CarShop26.Controllers
                 return View(addCarsFormModel);
 
             }
-            bool cityExists = await dbContext.Cities.AnyAsync(city => city.Id == addCarsFormModel.CityId);
-
-            if (!cityExists)
+            bool citiAndCategoryExist = await carService.IsCategoryAndCityExistsAsync(addCarsFormModel.CityId, addCarsFormModel.CategoryId);
+            if (!citiAndCategoryExist)
             {
-                ModelState.AddModelError(nameof(addCarsFormModel.CityId), "Invalid city!");
+                ModelState.AddModelError(string.Empty, "Invalid city or category.");
             }
-
-            bool categoryExists = await dbContext.Categories.AnyAsync(category => category.Id == addCarsFormModel.CategoryId);
-            if (!categoryExists)
-            {
-                ModelState.AddModelError(nameof(addCarsFormModel.CategoryId), "Invalid category!");
-            }
-            bool fuelTypeExists = Enum.IsDefined(addCarsFormModel.FuelType?.GetType()!, addCarsFormModel.FuelType);
+            bool fuelTypeExists = Enum.IsDefined(addCarsFormModel.FuelType?.GetType(), addCarsFormModel.FuelType);
             if (!fuelTypeExists)
             {
                 ModelState.AddModelError(nameof(addCarsFormModel.FuelType), "Invalid fuel type!");
             }
-            bool gearboxTypeExists = Enum.IsDefined(addCarsFormModel.GearboxType?.GetType()!, addCarsFormModel.GearboxType);
+            bool gearboxTypeExists = Enum.IsDefined(addCarsFormModel.GearboxType?.GetType(), addCarsFormModel.GearboxType);
             if (!gearboxTypeExists)
             {
                 ModelState.AddModelError(nameof(addCarsFormModel.GearboxType), "Invalid gearbox type!");
@@ -125,10 +119,8 @@ namespace CarShop26.Controllers
 
         [HttpPost]
         [Authorize]
-        public async Task <IActionResult> Edit(int id, CarsFormModel editCarsFormModel)
+        public async Task<IActionResult> Edit(int id, CarsFormModel editCarsFormModel)
         {
-
-            editCarsFormModel =  await carService.GetCarFormModelWhithCitiesAndCategoriesAsync();
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
 
             bool carExists = await carService.CarExistsaAsync(id);
@@ -138,40 +130,27 @@ namespace CarShop26.Controllers
                 return NotFound();
             }
 
-           
-            if (!ModelState.IsValid)
-            {
-                return View(editCarsFormModel);
-            }
-            if (!ModelState.IsValid)
-            {
-                editCarsFormModel = await carService.GetCarFormModelWhithCitiesAndCategoriesAsync();
+            
+            bool cityAndCategoryExist =
+                await carService.IsCategoryAndCityExistsAsync(editCarsFormModel.CityId, editCarsFormModel.CategoryId);
 
-                return View(editCarsFormModel);
-
-            }
-            bool cityExists = await  dbContext.Cities.AnyAsync(city => city.Id == editCarsFormModel.CityId);
-
-            if (!cityExists)
+            if (!cityAndCategoryExist)
             {
-                ModelState.AddModelError(nameof(editCarsFormModel.CityId), "Invalid city!");
+                ModelState.AddModelError(string.Empty, "Invalid city or category.");
             }
 
-            bool categoryExists = await dbContext.Categories.AnyAsync(category => category.Id == editCarsFormModel.CategoryId);
-            if (!categoryExists)
+            
+            if (!editCarsFormModel.FuelType.HasValue)
             {
-                ModelState.AddModelError(nameof(editCarsFormModel.CategoryId), "Invalid category!");
+                ModelState.AddModelError(nameof(editCarsFormModel.FuelType), "Fuel type is required.");
             }
-            bool fuelTypeExists = Enum.IsDefined(editCarsFormModel.FuelType?.GetType()!, editCarsFormModel.FuelType);
-            if (!fuelTypeExists)
+
+            if (!editCarsFormModel.GearboxType.HasValue)
             {
-                ModelState.AddModelError(nameof(editCarsFormModel.FuelType), "Invalid fuel type!");
+                ModelState.AddModelError(nameof(editCarsFormModel.GearboxType), "Gearbox type is required.");
             }
-            bool gearboxTypeExists = Enum.IsDefined(editCarsFormModel.GearboxType?.GetType()!, editCarsFormModel.GearboxType);
-            if (!gearboxTypeExists)
-            {
-                ModelState.AddModelError(nameof(editCarsFormModel.GearboxType), "Invalid gearbox type!");
-            }
+
+            
 
             try
             {
@@ -181,13 +160,9 @@ namespace CarShop26.Controllers
             catch (Exception e)
             {
                 Console.WriteLine(e);
-                ModelState.AddModelError(string.Empty, "An error occurred while adding the car. Please try again.");
+                ModelState.AddModelError(string.Empty, "An error occurred while editing the car. Please try again.");
                 return View(editCarsFormModel);
-
             }
-
-
-
         }
 
         [HttpPost]

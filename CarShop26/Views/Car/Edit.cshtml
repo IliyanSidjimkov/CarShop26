@@ -49,28 +49,20 @@
 
     <div class="col-md-6">
         <label asp-for="FuelType" class="form-label">Fuel Type</label>
-        <select asp-for="FuelType" class="form-select">
+        <select asp-for="FuelType"
+                asp-items="Html.GetEnumSelectList<CarShop26.Models.FuelType>()"
+                class="form-select">
             <option value="">-- Select fuel type --</option>
-            @foreach (CarShop26.Models.FuelType ft in Enum.GetValues(typeof(CarShop26.Models.FuelType)))
-            {
-                <option value="@( (int)ft )" selected="@(Model != null && Model.FuelType.HasValue && Model.FuelType.Value == ft ? "selected" : null)">
-                    @ft.ToString()
-                </option>
-            }
         </select>
         <span asp-validation-for="FuelType" class="text-danger"></span>
     </div>
 
     <div class="col-md-6">
         <label asp-for="GearboxType" class="form-label">Gearbox</label>
-        <select asp-for="GearboxType" class="form-select">
+        <select asp-for="GearboxType"
+                asp-items="Html.GetEnumSelectList<CarShop26.Models.GearboxType>()"
+                class="form-select">
             <option value="">-- Select gearbox --</option>
-            @foreach (CarShop26.Models.GearboxType gb in Enum.GetValues(typeof(CarShop26.Models.GearboxType)))
-            {
-                <option value="@( (int)gb )" selected="@(Model != null && Model.GearboxType.HasValue && Model.GearboxType.Value == gb ? "selected" : null)">
-                    @gb.ToString()
-                </option>
-            }
         </select>
         <span asp-validation-for="GearboxType" class="text-danger"></span>
     </div>

@@ -21,7 +21,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CarShop26.Common\CarShop26.Common.csproj" />
-    <ProjectReference Include="..\CarShop26.Data\CarShop26.Data.csproj" />
+    <ProjectReference Include="..\CarShop26.Data.Models\CarShop26.Data.Models.csproj" />
     <ProjectReference Include="..\CarShop26.Services.Core\CarShop26.Services.Core.csproj" />
     <ProjectReference Include="..\CarShop26.ViewModels\CarShop26.ViewModels.csproj" />
   </ItemGroup>

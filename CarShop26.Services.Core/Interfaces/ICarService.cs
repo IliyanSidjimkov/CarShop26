@@ -28,5 +28,7 @@ namespace CarShop26.Services.Core.Interfaces
 
         Task<IEnumerable<AllCarsViewModel>> GetMyCarsAsync(string? userId);
 
+        Task<bool> IsCategoryAndCityExistsAsync(int cityId, int categoryId);
+
     }
 }

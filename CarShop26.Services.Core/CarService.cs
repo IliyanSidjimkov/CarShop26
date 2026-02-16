@@ -29,8 +29,8 @@ namespace CarShop26.Services.Core
                 Year = addCarViewModel.Year,
                 Price = addCarViewModel.Price,
                 Mileage = addCarViewModel.Mileage,
-                FuelType = addCarViewModel.FuelType!.Value,
-                GearboxType = addCarViewModel.GearboxType!.Value,
+                FuelType = addCarViewModel.FuelType.Value,
+                GearboxType = addCarViewModel.GearboxType.Value,
                 ImageUrl = addCarViewModel.ImageUrl,
                 CityId = addCarViewModel.CityId,
                 CategoryId = addCarViewModel.CategoryId,
@@ -66,7 +66,7 @@ namespace CarShop26.Services.Core
         {
             Car? carToEdit = await dbContext.Cars
              .FirstOrDefaultAsync(c => c.Id == id);
-            if (carToEdit!.UserId!.ToLowerInvariant() != userId.ToLowerInvariant())
+            if (carToEdit.UserId!.ToLowerInvariant() != userId.ToLowerInvariant())
             {
                 throw new UnauthorizedAccessException();
             }
@@ -207,6 +207,17 @@ namespace CarShop26.Services.Core
                 })
                 .ToListAsync();
             return myCars;
+        }
+
+        public async Task<bool> IsCategoryAndCityExistsAsync(int cityId, int categoryId)
+        {
+            bool cityExists = await dbContext.Cities.AnyAsync(c => c.Id == cityId);
+
+           
+
+            bool categoryExists = await dbContext.Categories.AnyAsync(c => c.Id == categoryId);
+            return cityExists && categoryExists;
+            
         }
     }
 }
