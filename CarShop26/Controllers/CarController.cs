@@ -51,6 +51,22 @@ namespace CarShop26.Controllers
         public async Task<IActionResult> AddCars(CarsFormModel addCarsFormModel)
         {
 
+           
+            bool citiAndCategoryExist = await carService.IsCategoryAndCityExistsAsync(addCarsFormModel.CityId, addCarsFormModel.CategoryId);
+            if (!citiAndCategoryExist)
+            {
+                ModelState.AddModelError(string.Empty, "Invalid city or category.");
+            }
+            
+            if (!addCarsFormModel.FuelType.HasValue)
+            {
+                ModelState.AddModelError(nameof(addCarsFormModel.FuelType), "Fuel type is required.");
+            }
+
+            if (!addCarsFormModel.GearboxType.HasValue)
+            {
+                ModelState.AddModelError(nameof(addCarsFormModel.GearboxType), "Gearbox type is required.");
+            }
             if (!ModelState.IsValid)
             {
                 addCarsFormModel = await carService.GetCarFormModelWhithCitiesAndCategoriesAsync();
@@ -58,22 +74,7 @@ namespace CarShop26.Controllers
                 return View(addCarsFormModel);
 
             }
-            bool citiAndCategoryExist = await carService.IsCategoryAndCityExistsAsync(addCarsFormModel.CityId, addCarsFormModel.CategoryId);
-            if (!citiAndCategoryExist)
-            {
-                ModelState.AddModelError(string.Empty, "Invalid city or category.");
-            }
-            bool fuelTypeExists = Enum.IsDefined(addCarsFormModel.FuelType?.GetType(), addCarsFormModel.FuelType);
-            if (!fuelTypeExists)
-            {
-                ModelState.AddModelError(nameof(addCarsFormModel.FuelType), "Invalid fuel type!");
-            }
-            bool gearboxTypeExists = Enum.IsDefined(addCarsFormModel.GearboxType?.GetType(), addCarsFormModel.GearboxType);
-            if (!gearboxTypeExists)
-            {
-                ModelState.AddModelError(nameof(addCarsFormModel.GearboxType), "Invalid gearbox type!");
-            }
-            
+
             try
             { 
                 string? userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -148,6 +149,11 @@ namespace CarShop26.Controllers
             if (!editCarsFormModel.GearboxType.HasValue)
             {
                 ModelState.AddModelError(nameof(editCarsFormModel.GearboxType), "Gearbox type is required.");
+            }
+            if (!ModelState.IsValid)
+            {
+                editCarsFormModel = await carService.GetCarFormModelWhithCitiesAndCategoriesAsync();
+                return View(editCarsFormModel);
             }
 
             

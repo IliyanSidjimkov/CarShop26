@@ -15,9 +15,11 @@ namespace CarShop26.Services.Core
     public class CarService : ICarService
     {
         readonly CarShop26DbContext dbContext;
-        public CarService(CarShop26DbContext dbContext)
+       
+        public CarService(CarShop26DbContext dbContext )
         {
             this.dbContext = dbContext;
+            
         }
 
         public async Task AddCarAsync(CarsFormModel addCarViewModel, string userId)
@@ -54,10 +56,13 @@ namespace CarShop26.Services.Core
                 throw new Exception();
             }
 
-            if (car.UserId!.ToLowerInvariant() != userId.ToLowerInvariant())
+            if (car.UserId! != userId)
             {
                 throw new UnauthorizedAccessException();
             }
+            IQueryable<Favourites> favourites = dbContext.Favourites.Where(f => f.CarId == id);
+
+            dbContext.Favourites.RemoveRange(favourites);
             dbContext.Cars.Remove(car);
             await dbContext.SaveChangesAsync();
         }
@@ -216,6 +221,8 @@ namespace CarShop26.Services.Core
            
 
             bool categoryExists = await dbContext.Categories.AnyAsync(c => c.Id == categoryId);
+
+            
             return cityExists && categoryExists;
             
         }
